@@ -2,12 +2,11 @@ import React, { useState } from 'react'
 import Sqaure from './Square'
 
 const Board = () => {
-
     const [xIsNext, setXIsNext] = useState(true)
     const [square, setSquare] = useState(Array(9).fill(null))
 
     const handleClick = (i) => {
-        if (square[i]) {
+        if (square[i] || calculateWinner(square)) {
             return
         }
         const nextSquares = square.slice()
@@ -20,8 +19,38 @@ const Board = () => {
         setXIsNext(!xIsNext)
     }
 
+    const calculateWinner = (square) => {
+        const lines = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ]
+
+        for (let i = 0; i < lines.length; i++) {
+            const [a, b, c] = lines[i]
+            if (square[a] && square[a] === square[b] && square[a] === square[c]) {
+                return square[a]
+            }
+        }
+        return null
+    }
+
+    const winner = calculateWinner(square)
+    let status
+    if (winner) {
+        status = "Winner : " + winner
+    } else {
+        status = "Next Player : " + (xIsNext ? "X" : "0")
+    }
+
     return (
         <div>
+            <div className='status'><h1>{status}</h1></div>
             <div className='board-row'>
                 <Sqaure value={square[0]} onSquareClick={() => handleClick(0)} />
                 <Sqaure value={square[1]} onSquareClick={() => handleClick(1)} />
